@@ -1,6 +1,9 @@
 import 'package:events_app/constants.dart';
+import 'package:events_app/screens/favourites.dart';
 import 'package:events_app/screens/home.dart';
+import 'package:events_app/screens/profile.dart';
 import 'package:events_app/screens/search.dart';
+import 'package:events_app/screens/tickets.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -47,7 +50,13 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  List tabs = [const Home(), const Search()];
+  List tabs = [
+    const Home(),
+    const Search(),
+    const Tickets(),
+    const Favourites(),
+    const Profile()
+  ];
   int _selectedIndex = 0;
 
   @override
@@ -61,9 +70,18 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: tabs[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xFFF2F2F2),
+        selectedItemColor: const Color(0xFF333538),
+        unselectedItemColor: const Color(0xFFBDBDBD),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'a'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'b')
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'a'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'b'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.bookmarks_outlined), label: 'c'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.favorite_outline), label: 'favorite'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.manage_accounts_outlined), label: 'profile')
         ],
         showSelectedLabels: false,
         showUnselectedLabels: false,

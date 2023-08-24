@@ -2,18 +2,20 @@ import 'package:events_app/constants.dart';
 import 'package:flutter/material.dart';
 
 class ButtonCommon extends StatelessWidget {
-  final Function? onPress;
+  final Function()? onPress;
   final Color? color;
   final String textButton;
   final Color? textColor;
   final double? width;
+  final double? padding;
 
   const ButtonCommon(
       {Key? key,
       required this.textButton,
       this.color = primaryColor,
       this.textColor = Colors.white,
-      this.onPress,
+      required this.onPress,
+      this.padding = 12,
       this.width = 120})
       : super(key: key);
 
@@ -25,8 +27,8 @@ class ButtonCommon extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: TextButton(
           style: TextButton.styleFrom(
-              padding: const EdgeInsets.all(16.0), backgroundColor: color),
-          onPressed: onPress!(),
+              padding: EdgeInsets.all(padding!), backgroundColor: color),
+          onPressed: onPress,
           child: Text(
             textButton,
             style: TextStyle(color: textColor),
