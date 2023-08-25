@@ -8,8 +8,9 @@ import 'package:intl/intl.dart';
 class EventItem extends StatelessWidget {
   final EventModel event;
   final int? index;
+  final Function()? onPressed;
 
-  const EventItem({Key? key, required this.event, this.index})
+  const EventItem({Key? key, required this.event, this.index, this.onPressed})
       : super(key: key);
 
   @override
@@ -19,20 +20,27 @@ class EventItem extends StatelessWidget {
         padding: EdgeInsets.only(top: (index == 1) ? 16 : 0),
         child: Row(
           children: [
-            Image.asset(
-              'assets/images/event_item.png',
-              width: 89,
-              height: 84,
-            ),
             Expanded(
               flex: 8,
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: EventInfo(
-                  time: DateFormat('EEE, MMM d, · hh:mm aaa')
-                      .format(DateTime.parse(event.time)),
-                  name: event.name,
-                  location: event.location,
+              child: InkWell(
+                onTap: onPressed,
+                child: Row(
+                  children: [
+                    Image.asset(
+                      'assets/images/event_item.png',
+                      width: 89,
+                      height: 84,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: EventInfo(
+                        time: DateFormat('EEE, MMM d, · hh:mm aaa')
+                            .format(DateTime.parse(event.time)),
+                        name: event.name,
+                        location: event.location,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

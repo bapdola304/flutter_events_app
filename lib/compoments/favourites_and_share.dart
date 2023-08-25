@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
 class FavouritesAndShare extends StatelessWidget {
-  const FavouritesAndShare({
-    Key? key,
-  }) : super(key: key);
+  final Color? iconColor;
+  const FavouritesAndShare({Key? key, this.iconColor}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Icon(Icons.favorite_outline),
-        SizedBox(width: 8),
-        Icon(Icons.share)
+        Icon(Icons.favorite_outline, color: iconColor),
+        const SizedBox(width: 8),
+        Icon(Icons.share, color: iconColor)
       ],
     );
   }

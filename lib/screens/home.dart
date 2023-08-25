@@ -5,6 +5,7 @@ import 'package:events_app/compoments/favourites_and_share.dart';
 import 'package:events_app/compoments/new_event_label.dart';
 import 'package:events_app/constants.dart';
 import 'package:events_app/models/event.dart';
+import 'package:events_app/screens/detai_event.dart';
 import 'package:events_app/screens/new_event.dart';
 import 'package:flutter/material.dart';
 
@@ -122,6 +123,11 @@ class _HomeState extends State<Home> {
                           : EventItem(
                               event: eventList[index],
                               index: index,
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => const DetailEvent(),
+                                ),
+                              ),
                             )),
                 ),
               )
