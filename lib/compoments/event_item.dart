@@ -8,9 +8,15 @@ import 'package:intl/intl.dart';
 class EventItem extends StatelessWidget {
   final EventModel event;
   final int? index;
+  final bool? isFavourite;
   final Function()? onPressed;
 
-  const EventItem({Key? key, required this.event, this.index, this.onPressed})
+  const EventItem(
+      {Key? key,
+      required this.event,
+      this.index,
+      this.onPressed,
+      this.isFavourite})
       : super(key: key);
 
   @override
@@ -44,7 +50,7 @@ class EventItem extends StatelessWidget {
                 ),
               ),
             ),
-            const FavouritesAndShare()
+            FavouritesAndShare(isFavourite: isFavourite)
           ],
         ),
       ),

@@ -52,8 +52,11 @@ class _TicketsState extends State<Tickets> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: primaryColor,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(30.0),
+        child: AppBar(
+          backgroundColor: primaryColor,
+        ),
       ),
       resizeToAvoidBottomInset: false,
       body: DefaultTabController(
