@@ -32,8 +32,8 @@ class EventItem extends StatelessWidget {
                 onTap: onPressed,
                 child: Row(
                   children: [
-                    Image.asset(
-                      'assets/images/event_item.png',
+                    Image.network(
+                      event.image,
                       width: 89,
                       height: 84,
                     ),

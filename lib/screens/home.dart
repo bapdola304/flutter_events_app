@@ -2,14 +2,18 @@ import 'package:events_app/compoments/button.dart';
 import 'package:events_app/compoments/event_info.dart';
 import 'package:events_app/compoments/event_item.dart';
 import 'package:events_app/compoments/favourites_and_share.dart';
+import 'package:events_app/compoments/loading_circle.dart';
 import 'package:events_app/compoments/new_event_label.dart';
 import 'package:events_app/constants.dart';
+import 'package:events_app/cubit/events_cubit.dart';
+import 'package:events_app/cubit/events_state.dart';
 import 'package:events_app/events/get_location.dart';
 import 'package:events_app/models/event.dart';
 import 'package:events_app/screens/detai_event.dart';
 import 'package:events_app/screens/new_event.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Home extends StatefulWidget {
@@ -19,72 +23,21 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-enum PermissionGroup {
-  /// Android: Fine and Coarse Location
-  /// iOS: CoreLocation - Always
-  locationAlways,
-
-  /// Android: Fine and Coarse Location
-  /// iOS: CoreLocation - WhenInUse
-  locationWhenInUse
-}
-
 class _HomeState extends State<Home> {
   String _currentAddress = "";
-
-  List<EventModel> eventList = [
-    const EventModel(
-      id: 1,
-      price: 10000,
-      name: "Music concert",
-      image: "https://picsum.photos/200",
-      time: '2023-08-25T03:23:08.073Z',
-      location: 'Quy Nhon',
-    ),
-    const EventModel(
-      id: 2,
-      price: 20000,
-      name: "Football",
-      image: "https://picsum.photos/200",
-      time: '2023-09-25T03:23:08.073Z',
-      location: 'Quy Nhon',
-    ),
-    const EventModel(
-      id: 3,
-      price: 30000,
-      name: "Black Pink",
-      image: "https://picsum.photos/200",
-      time: '2023-08-25T03:23:08.073Z',
-      location: 'Hà nội',
-    ),
-    const EventModel(
-      id: 4,
-      price: 30000,
-      name: "The Wombats",
-      image: "https://picsum.photos/200",
-      time: '2023-08-25T03:23:08.073Z',
-      location: 'Hà nội',
-    ),
-    const EventModel(
-      id: 5,
-      price: 30000,
-      name: "Foster The People",
-      image: "https://picsum.photos/200",
-      time: '2023-08-25T03:23:08.073Z',
-      location: 'Hà nội',
-    )
-  ];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    context.read<EventsCubit>().fetchPostApi();
     getLocationStatus();
   }
 
   Future getLocationStatus() async {
     if (await Permission.location.request().isGranted) {
       var locationAddress = await getCurrentPosition();
+      debugPrint("state: $locationAddress");
       setState(() {
         _currentAddress = locationAddress;
       });
@@ -143,24 +96,39 @@ class _HomeState extends State<Home> {
                     'Popular in $_currentAddress',
                     style: const TextStyle(fontSize: 16),
                   )),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  height: 30,
-                  child: ListView.builder(
-                      itemCount: eventList.length,
-                      itemBuilder: (context, index) => index == 0
-                          ? const NewEventItem()
-                          : EventItem(
-                              event: eventList[index],
-                              index: index,
-                              onPressed: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => const DetailEvent(),
-                                ),
-                              ),
-                            )),
-                ),
+              BlocBuilder<EventsCubit, EventsState>(
+                builder: (context, state) {
+                  if (state is EventsInitialLoading) {
+                    return const LoadingCirle();
+                  } else if (state is EventsInitialLoaded) {
+                    final postList = state.postList;
+                    return Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        height: 30,
+                        child: ListView.builder(
+                            itemCount: postList.length,
+                            itemBuilder: (context, index) => index == 0
+                                ? NewEventItem(
+                                    ticket: postList[index],
+                                  )
+                                : EventItem(
+                                    event: postList[index],
+                                    index: index,
+                                    onPressed: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const DetailEvent(),
+                                      ),
+                                    ),
+                                  )),
+                      ),
+                    );
+                  } else if (state is EventsError) {
+                    return Text("Fail to fetch data");
+                  }
+                  return const SizedBox.shrink();
+                },
               )
             ])),
       ),
@@ -169,8 +137,10 @@ class _HomeState extends State<Home> {
 }
 
 class NewEventItem extends StatelessWidget {
+  final EventModel ticket;
   const NewEventItem({
     super.key,
+    required this.ticket,
   });
 
   @override
@@ -186,11 +156,12 @@ class NewEventItem extends StatelessWidget {
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(10),
                     bottomRight: Radius.circular(10))),
-            child: const Column(children: [
+            child: Column(children: [
               EventInfo(
-                time: 'Mon, Apr 18 · 21:00 Pm ',
-                name: 'La Rosalia',
-                location: 'Palau Sant Jordi, Barcelona',
+                time: DateFormat('EEE, MMM d, · hh:mm aaa')
+                    .format(DateTime.parse(ticket.time)),
+                name: ticket.name,
+                location: ticket.location,
               ),
               FavouritesAndShare()
             ]),
