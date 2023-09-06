@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:events_app/models/event.dart';
 
 abstract class EventsState extends Equatable {
   const EventsState();
@@ -12,8 +11,9 @@ class EventsInitial extends EventsState {}
 class EventsInitialLoading extends EventsState {}
 
 class EventsInitialLoaded extends EventsState {
-  final List<EventModel> postList;
-  const EventsInitialLoaded({required this.postList});
+  final postList;
+
+  const EventsInitialLoaded({this.postList});
 
   @override
   List<Object> get props => [postList];

@@ -101,24 +101,24 @@ class _HomeState extends State<Home> {
                   if (state is EventsInitialLoading) {
                     return const LoadingCirle();
                   } else if (state is EventsInitialLoaded) {
-                    final postList = state.postList;
+                    final eventList = state.postList;
                     return Expanded(
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         height: 30,
                         child: ListView.builder(
-                            itemCount: postList.length,
+                            itemCount: eventList.length,
                             itemBuilder: (context, index) => index == 0
                                 ? NewEventItem(
-                                    ticket: postList[index],
+                                    ticket: eventList[index],
                                   )
                                 : EventItem(
-                                    event: postList[index],
+                                    event: eventList[index],
                                     index: index,
                                     onPressed: () => Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            const DetailEvent(),
+                                        builder: (context) => DetailEvent(
+                                            eventId: eventList[index].id),
                                       ),
                                     ),
                                   )),

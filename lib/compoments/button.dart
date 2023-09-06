@@ -8,6 +8,7 @@ class ButtonCommon extends StatelessWidget {
   final Color? textColor;
   final double? width;
   final double? padding;
+  final bool? isLoading;
 
   const ButtonCommon(
       {Key? key,
@@ -16,7 +17,8 @@ class ButtonCommon extends StatelessWidget {
       this.textColor = Colors.white,
       required this.onPress,
       this.padding = 12,
-      this.width = 120})
+      this.width = 120,
+      this.isLoading})
       : super(key: key);
 
   @override
@@ -29,9 +31,25 @@ class ButtonCommon extends StatelessWidget {
           style: TextButton.styleFrom(
               padding: EdgeInsets.all(padding!), backgroundColor: color),
           onPressed: onPress,
-          child: Text(
-            textButton,
-            style: TextStyle(color: textColor),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                textButton,
+                style: TextStyle(color: textColor),
+              ),
+              const SizedBox(
+                width: 8,
+              ),
+              isLoading == true
+                  ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                      ))
+                  : SizedBox()
+            ],
           ),
         ),
       ),

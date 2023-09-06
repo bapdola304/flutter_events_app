@@ -1,4 +1,5 @@
 import 'package:events_app/constants.dart';
+import 'package:events_app/cubit/detail_event_cubit.dart';
 import 'package:events_app/cubit/events_cubit.dart';
 import 'package:events_app/repository/events_repository.dart';
 import 'package:events_app/screens/favourites.dart';
@@ -10,6 +11,7 @@ import 'package:events_app/services/event_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -29,9 +31,14 @@ class MyApp extends StatelessWidget {
         BlocProvider<EventsCubit>(
           create: (BuildContext context) =>
               EventsCubit(EventRepository(apiService: ApiService())),
+        ),
+        BlocProvider<EventDetailCubit>(
+          create: (BuildContext context) =>
+              EventDetailCubit(EventRepository(apiService: ApiService())),
         )
       ],
       child: MaterialApp(
+        builder: FToastBuilder(),
         title: 'Flutter Demo',
         theme: ThemeData(
           // This is the theme of your application.

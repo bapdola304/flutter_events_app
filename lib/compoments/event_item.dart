@@ -21,6 +21,8 @@ class EventItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isURLValid = Uri.parse(event.image).host.isNotEmpty;
+
     return Stack(children: [
       Container(
         padding: EdgeInsets.only(top: (index == 1) ? 16 : 0),
@@ -32,11 +34,17 @@ class EventItem extends StatelessWidget {
                 onTap: onPressed,
                 child: Row(
                   children: [
-                    Image.network(
-                      event.image,
-                      width: 89,
-                      height: 84,
-                    ),
+                    isURLValid
+                        ? Image.network(
+                            event.image,
+                            width: 89,
+                            height: 84,
+                          )
+                        : Image.asset(
+                            "assets/images/detail.png",
+                            width: 89,
+                            height: 84,
+                          ),
                     Padding(
                       padding: const EdgeInsets.all(8),
                       child: EventInfo(

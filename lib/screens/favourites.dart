@@ -13,40 +13,40 @@ class Favourites extends StatefulWidget {
 
 class _FavouritesState extends State<Favourites> {
   List<EventModel> eventList = [
-    const EventModel(
-      id: 1,
+    EventModel(
+      id: "1",
       price: 10000,
       name: "Music concert",
       image: "https://picsum.photos/200",
       time: '2023-08-25T03:23:08.073Z',
       location: 'Quy Nhon',
     ),
-    const EventModel(
-      id: 2,
+    EventModel(
+      id: "2",
       price: 20000,
       name: "Football",
       image: "https://picsum.photos/200",
       time: '2023-09-25T03:23:08.073Z',
       location: 'Quy Nhon',
     ),
-    const EventModel(
-      id: 3,
+    EventModel(
+      id: "3",
       price: 30000,
       name: "Black Pink",
       image: "https://picsum.photos/200",
       time: '2023-08-25T03:23:08.073Z',
       location: 'Hà nội',
     ),
-    const EventModel(
-      id: 4,
+    EventModel(
+      id: "4",
       price: 30000,
       name: "The Wombats",
       image: "https://picsum.photos/200",
       time: '2023-08-25T03:23:08.073Z',
       location: 'Hà nội',
     ),
-    const EventModel(
-      id: 5,
+    EventModel(
+      id: "5",
       price: 30000,
       name: "Foster The People",
       image: "https://picsum.photos/200",
