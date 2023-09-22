@@ -54,6 +54,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    double c_width = MediaQuery.of(context).size.width * 0.5;
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -75,10 +76,13 @@ class _HomeState extends State<Home> {
                         children: [
                           const Icon(Icons.location_on_outlined),
                           const SizedBox(width: 4),
-                          Text(
-                            _currentAddress,
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w600),
+                          Container(
+                            width: c_width,
+                            child: Text(
+                              "$_currentAddress 123123218321jjj",
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w600),
+                            ),
                           )
                         ],
                       )

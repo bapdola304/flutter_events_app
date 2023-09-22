@@ -1,6 +1,8 @@
 import 'package:events_app/compoments/button.dart';
+import 'package:events_app/compoments/input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get_storage/get_storage.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -10,6 +12,32 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  final _profileNameController = TextEditingController();
+  final storage = GetStorage();
+  static const String key = 'profileName';
+  late String profileName = 'Hung Ngo';
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _profileNameController.text =
+        storage.read(key) != null ? storage.read(key) : 'Hung Ngo';
+    profileName = storage.read(key) != null ? storage.read(key) : 'Hung Ngo';
+    storage.listenKey(key, (value) {
+      setState(() {
+        profileName = value;
+      });
+    });
+  }
+
+  // @override
+  // void dispose() {
+  //   // TODO: implement dispose
+  //   super.dispose();
+  //   storage.erase();
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,21 +85,48 @@ class _ProfileState extends State<Profile> {
                     const SizedBox(
                       height: 32,
                     ),
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Hung Ngo",
-                          style: TextStyle(
+                          profileName,
+                          style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.w600),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 6,
                         ),
-                        Icon(
-                          Icons.edit,
-                          size: 16,
-                          color: Color.fromRGBO(51, 53, 56, 1),
+                        GestureDetector(
+                          onTap: () => showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: const Text('AlertDialog Title'),
+                              content: InputField(
+                                height: 50,
+                                controller: _profileNameController,
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, 'Cancel'),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context, 'OK');
+                                    storage.write(
+                                        key, _profileNameController.text);
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.edit,
+                            size: 16,
+                            color: Color.fromRGBO(51, 53, 56, 1),
+                          ),
                         )
                       ],
                     ),

@@ -1,8 +1,14 @@
 import 'package:events_app/compoments/event_item.dart';
+import 'package:events_app/compoments/loading_circle.dart';
 import 'package:events_app/constants.dart';
+import 'package:events_app/cubit/events_cubit.dart';
+import 'package:events_app/cubit/events_state.dart';
+import 'package:events_app/cubit/favourite_cubit.dart';
 import 'package:events_app/models/event.dart';
+import 'package:events_app/models/favourite.dart';
 import 'package:events_app/screens/detai_event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 const List<String> list = <String>['A-Z', 'Z-A', 'Date'];
 
@@ -14,7 +20,9 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
-  List<EventModel> eventList = [
+  var eventList = <EventModel>[];
+
+  List<EventModel> eventListData = [
     EventModel(
       id: "1",
       price: 10000,
@@ -57,6 +65,34 @@ class _SearchState extends State<Search> {
     )
   ];
 
+  Future _handleAddFavourite(EventModel event) async {
+    await context.read<FavouriteCubit>().addFavourite(
+        event.id, FavouriteRequest(isFavourite: !event.isFavourite!));
+    context.read<EventsCubit>().fetchPostApi();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setData(eventListData);
+  }
+
+  void setData(List<EventModel> data) {
+    setState(() {
+      eventList = data;
+    });
+  }
+
+  void filterSearchResults(String query) {
+    setState(() {
+      eventList = eventListData
+          .where(
+              (item) => item.name.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +102,11 @@ class _SearchState extends State<Search> {
           child: Column(
             children: [
               const SizedBox(height: 32),
-              const SearchBox(),
+              SearchBox(
+                onChanged: (value) {
+                  filterSearchResults(value);
+                },
+              ),
               const SizedBox(height: 16),
               const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -78,21 +118,36 @@ class _SearchState extends State<Search> {
                   DropdownSort()
                 ],
               ),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  height: 30,
-                  child: ListView.builder(
-                      itemCount: eventList.length,
-                      itemBuilder: (context, index) => EventItem(
-                            event: eventList[index],
-                            onPressed: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const DetailEvent(),
-                              ),
-                            ),
-                          )),
-                ),
+              BlocBuilder<EventsCubit, EventsState>(
+                builder: (context, state) {
+                  if (state is EventsInitialLoading) {
+                    return const LoadingCirle();
+                  } else if (state is EventsInitialLoaded) {
+                    // setData(state.postList);
+                    return Expanded(
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          height: 30,
+                          child: ListView.builder(
+                              itemCount: eventList.length,
+                              itemBuilder: (context, index) => EventItem(
+                                    event: eventList[index],
+                                    index: index,
+                                    onPressed: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => DetailEvent(
+                                            eventId: eventList[index].id),
+                                      ),
+                                    ),
+                                    onFavourited: () =>
+                                        _handleAddFavourite(eventList[index]),
+                                  ))),
+                    );
+                  } else if (state is EventsError) {
+                    return Text("Fail to fetch data");
+                  }
+                  return const SizedBox.shrink();
+                },
               )
             ],
           ),
@@ -103,8 +158,10 @@ class _SearchState extends State<Search> {
 }
 
 class SearchBox extends StatelessWidget {
+  final Function(String value)? onChanged;
   const SearchBox({
     super.key,
+    this.onChanged,
   });
 
   @override
@@ -113,9 +170,12 @@ class SearchBox extends StatelessWidget {
       decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.4),
           borderRadius: BorderRadius.circular(20)),
-      child: const TextField(
-          style: TextStyle(color: textColor, fontSize: 16),
-          decoration: InputDecoration(
+      child: TextField(
+          onChanged: (String value) {
+            onChanged!(value);
+          },
+          style: const TextStyle(color: textColor, fontSize: 16),
+          decoration: const InputDecoration(
             // icon: Icon(Icons.search),
             hintText: 'Search for...',
             hintStyle: TextStyle(color: Color(0xFFBDBDBD)),
