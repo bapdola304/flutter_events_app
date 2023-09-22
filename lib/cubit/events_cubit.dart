@@ -24,7 +24,6 @@ class EventsCubit extends Cubit<EventsState> {
   }
 
   Future<Object?> createEventCubit(EventModel event) async {
-    emit(EventsInitialLoading());
     try {
       final response = await eventRepository.CreateEvent(event);
       // emit(EventsInitialLoaded(createEventData: response));
@@ -40,10 +39,9 @@ class EventsCubit extends Cubit<EventsState> {
     }
   }
 
-  Future<Object?> deleteEventCubit(EventModel event) async {
-    emit(EventsInitialLoading());
+  Future<Object?> deleteEventCubit(String id) async {
     try {
-      final response = await eventRepository.CreateEvent(event);
+      final response = await eventRepository.deleteEvent(id);
       // emit(EventsInitialLoaded(createEventData: response));
       fetchPostApi();
       return response;

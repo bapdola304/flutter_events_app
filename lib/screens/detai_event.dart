@@ -9,15 +9,53 @@ import 'package:events_app/cubit/detail_event_state.dart';
 import 'package:events_app/cubit/events_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
-class DetailEvent extends StatelessWidget {
+class DetailEvent extends StatefulWidget {
   final String? eventId;
   const DetailEvent({super.key, this.eventId});
 
   @override
+  State<DetailEvent> createState() => _DetailEventState();
+}
+
+class _DetailEventState extends State<DetailEvent> {
+  bool _isLoading = false;
+  late FToast fToast;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fToast = FToast();
+    // if you want to use context from globally instead of content we need to pass navigatorKey.currentContext!
+    fToast.init(context);
+  }
+
+  Future _handleSubmit(BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
+    await context.read<EventsCubit>().deleteEventCubit(widget.eventId!);
+    setState(() {
+      _isLoading = false;
+    });
+    fToast.showToast(
+      child: ButtonCommon(
+        textButton: 'Delete Event Success!',
+        onPress: () {},
+        width: MediaQuery.of(context).size.width * 0.5,
+      ),
+      gravity: ToastGravity.TOP,
+      toastDuration: Duration(seconds: 2),
+    );
+    if (context.mounted) Navigator.pop(context);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    context.read<EventDetailCubit>().getEvent(eventId!);
+    context.read<EventDetailCubit>().getEvent(widget.eventId!);
     return Scaffold(
       body: Container(
         child: BlocBuilder<EventDetailCubit, EventDetailState>(
@@ -30,7 +68,8 @@ class DetailEvent extends StatelessWidget {
               );
             } else if (state is EventDetailStateLoaded) {
               final eventData = state.eventData;
-              bool isURLValid = Uri.parse(eventData.image).host.isNotEmpty;
+              bool isURLValid =
+                  Uri.parse(state.eventData.image).host.isNotEmpty;
               return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -58,10 +97,13 @@ class DetailEvent extends StatelessWidget {
                               color: Colors.white,
                             )),
                       ),
-                      const Positioned(
+                      Positioned(
                         bottom: 22,
                         right: 16,
-                        child: FavouritesAndShare(iconColor: Colors.white),
+                        child: FavouritesAndShare(
+                          iconColor: Colors.white,
+                          isFavourite: eventData.isFavourite,
+                        ),
                       )
                     ]),
                     Container(
@@ -173,7 +215,8 @@ class DetailEvent extends StatelessWidget {
                               textButton: 'Delete Event',
                               color: redColor,
                               width: 190,
-                              onPress: () {})
+                              isLoading: _isLoading,
+                              onPress: () => _handleSubmit(context))
                         ],
                       ),
                     )

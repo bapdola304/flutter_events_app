@@ -7,8 +7,10 @@ import 'package:events_app/compoments/new_event_label.dart';
 import 'package:events_app/constants.dart';
 import 'package:events_app/cubit/events_cubit.dart';
 import 'package:events_app/cubit/events_state.dart';
+import 'package:events_app/cubit/favourite_cubit.dart';
 import 'package:events_app/events/get_location.dart';
 import 'package:events_app/models/event.dart';
+import 'package:events_app/models/favourite.dart';
 import 'package:events_app/screens/detai_event.dart';
 import 'package:events_app/screens/new_event.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +44,12 @@ class _HomeState extends State<Home> {
         _currentAddress = locationAddress;
       });
     }
+  }
+
+  Future _handleAddFavourite(EventModel event) async {
+    await context.read<FavouriteCubit>().addFavourite(
+        event.id, FavouriteRequest(isFavourite: !event.isFavourite!));
+    context.read<EventsCubit>().fetchPostApi();
   }
 
   @override
@@ -110,8 +118,15 @@ class _HomeState extends State<Home> {
                             itemCount: eventList.length,
                             itemBuilder: (context, index) => index == 0
                                 ? NewEventItem(
-                                    ticket: eventList[index],
-                                  )
+                                    event: eventList[index],
+                                    onFavourited: () =>
+                                        _handleAddFavourite(eventList[index]),
+                                    onPressed: () => Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => DetailEvent(
+                                                eventId: eventList[index].id),
+                                          ),
+                                        ))
                                 : EventItem(
                                     event: eventList[index],
                                     index: index,
@@ -121,6 +136,8 @@ class _HomeState extends State<Home> {
                                             eventId: eventList[index].id),
                                       ),
                                     ),
+                                    onFavourited: () =>
+                                        _handleAddFavourite(eventList[index]),
                                   )),
                       ),
                     );
@@ -137,36 +154,45 @@ class _HomeState extends State<Home> {
 }
 
 class NewEventItem extends StatelessWidget {
-  final EventModel ticket;
+  final EventModel event;
+  final Function()? onPressed;
+  final Function()? onFavourited;
   const NewEventItem({
     super.key,
-    required this.ticket,
+    required this.event,
+    this.onPressed,
+    this.onFavourited,
   });
 
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      Column(
-        children: [
-          Image.asset('assets/images/card_home.png'),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-            decoration: const BoxDecoration(
-                color: Color(0xFFF2F2F2),
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10))),
-            child: Column(children: [
-              EventInfo(
-                time: DateFormat('EEE, MMM d, · hh:mm aaa')
-                    .format(DateTime.parse(ticket.time)),
-                name: ticket.name,
-                location: ticket.location,
-              ),
-              FavouritesAndShare()
-            ]),
-          )
-        ],
+      InkWell(
+        onTap: onPressed,
+        child: Column(
+          children: [
+            Image.asset('assets/images/card_home.png'),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              decoration: const BoxDecoration(
+                  color: Color(0xFFF2F2F2),
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10))),
+              child: Column(children: [
+                EventInfo(
+                  time: DateFormat('EEE, MMM d, · hh:mm aaa')
+                      .format(DateTime.parse(event.time)),
+                  name: event.name,
+                  location: event.location,
+                ),
+                FavouritesAndShare(
+                    isFavourite: event.isFavourite,
+                    onFavouritePressed: onFavourited)
+              ]),
+            )
+          ],
+        ),
       ),
       const NewEventLabel(
         top: 10,

@@ -1,6 +1,8 @@
 import 'package:events_app/constants.dart';
 import 'package:events_app/cubit/detail_event_cubit.dart';
 import 'package:events_app/cubit/events_cubit.dart';
+import 'package:events_app/cubit/favourite_cubit.dart';
+import 'package:events_app/cubit/favourite_list_cubit.dart';
 import 'package:events_app/repository/events_repository.dart';
 import 'package:events_app/screens/favourites.dart';
 import 'package:events_app/screens/home.dart';
@@ -35,6 +37,14 @@ class MyApp extends StatelessWidget {
         BlocProvider<EventDetailCubit>(
           create: (BuildContext context) =>
               EventDetailCubit(EventRepository(apiService: ApiService())),
+        ),
+        BlocProvider<FavouriteCubit>(
+          create: (BuildContext context) =>
+              FavouriteCubit(EventRepository(apiService: ApiService())),
+        ),
+        BlocProvider<FavouriteListCubit>(
+          create: (BuildContext context) =>
+              FavouriteListCubit(EventRepository(apiService: ApiService())),
         )
       ],
       child: MaterialApp(

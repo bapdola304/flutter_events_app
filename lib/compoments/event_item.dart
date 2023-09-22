@@ -10,13 +10,15 @@ class EventItem extends StatelessWidget {
   final int? index;
   final bool? isFavourite;
   final Function()? onPressed;
+  final Function()? onFavourited;
 
   const EventItem(
       {Key? key,
       required this.event,
       this.index,
       this.onPressed,
-      this.isFavourite})
+      this.isFavourite,
+      this.onFavourited})
       : super(key: key);
 
   @override
@@ -58,7 +60,9 @@ class EventItem extends StatelessWidget {
                 ),
               ),
             ),
-            FavouritesAndShare(isFavourite: isFavourite)
+            FavouritesAndShare(
+                isFavourite: event.isFavourite,
+                onFavouritePressed: onFavourited)
           ],
         ),
       ),

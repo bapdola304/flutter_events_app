@@ -136,7 +136,7 @@ class _NewEventState extends State<NewEvent> with WidgetsBindingObserver {
                 hintText: 'Image',
                 controller: _imageController,
               ),
-              SizedBox(height: isKeyboardVisible ? 20 : 220),
+              SizedBox(height: isKeyboardVisible ? 20 : 180),
               ButtonCommon(
                 textButton: 'Submit',
                 onPress: _handleSubmit,
